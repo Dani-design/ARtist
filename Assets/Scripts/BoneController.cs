@@ -156,10 +156,21 @@ namespace UnityEngine.XR.ARFoundation.Samples
             {
                 XRHumanBodyJoint joint = joints[i];
                 var bone = m_BoneMapping[i];
+                
                 if (bone != null)
                 {
-                    bone.transform.localPosition = joint.localPose.position;
-                    bone.transform.localRotation = joint.localPose.rotation;
+                  //  if (i == 0)
+                   // {
+                   //     bone.transform.position = joint.localPose.position;
+                   //     bone.transform.rotation = joint.localPose.rotation;
+                   // }
+                   // else
+                   // {
+                        bone.transform.localPosition = joint.localPose.position;
+                        bone.transform.localRotation = joint.localPose.rotation;
+                   // }
+                    
+                    
                 }
             }
         }

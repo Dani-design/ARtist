@@ -42,6 +42,135 @@ namespace UnityEngine.XR.ARFoundation.Samples
             m_HumanBodyManager.humanBodiesChanged += OnHumanBodiesChanged;
         }
 
+        public void TestButtonClicked()
+        {
+            //go through some initialization and go through the item that's down there is destroyed 
+            foreach (var id in m_SkeletonTracker.Keys)
+            {
+                var boneController = m_SkeletonTracker[id];
+
+                TrailRenderer[] children = boneController.GetComponentsInChildren<TrailRenderer>(); ;
+                if (children != null && children.Length > 0)
+                {
+                    foreach (TrailRenderer child in children)
+                    {
+                        Debug.Log(child.gameObject.name);
+                        child.Clear();
+                    }
+                }
+                else
+                {
+                    Debug.Log("no Children");
+                }
+            }
+        }
+
+        public void PauseButton()
+        {
+            foreach (var id in m_SkeletonTracker.Keys)
+            {
+                var boneController = m_SkeletonTracker[id];
+                TrailRenderer[] children = boneController.GetComponentsInChildren<TrailRenderer>();
+                if (children != null && children.Length > 0)
+                {
+                    if (children[0].emitting == true)
+                    {
+                        foreach (TrailRenderer child in children)
+                        {
+                            child.emitting = false;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("no Children");
+                }
+            }
+        }
+        
+        public void changeColor()
+        {
+            Material m_Material = gameObject.GetComponentInChildren<Renderer>().sharedMaterial;
+            if (m_Material.color == Color.green)
+            {
+                m_Material.color = Color.red;
+            }
+            else
+            {
+                m_Material.color = Color.green;
+            }
+        }
+
+        public void Head()
+        {
+            Emitting("Nose");
+        }
+        public void RightHand()
+        {
+            Emitting("RightHandIndex3");
+        }
+        public void LeftHand()
+        {
+            Emitting("LeftHandIndex3");
+        }
+        public void RightFoot()
+        {
+            Emitting("RightFoot");
+        }
+        public void Leftfoot()
+        {
+            Emitting("LeftFoot");
+        }
+
+        public void Emitting(string Name)
+        {
+            var something = transform;
+            foreach (var id in m_SkeletonTracker.Keys)
+            {
+                var boneController = m_SkeletonTracker[id];
+                Debug.Log("m_SkeletonTracker id is " + boneController);
+                //TrailRenderer[]  = boneController.GetComponentsInChildren<TrailRenderer>();
+                Transform[] ts = boneController.transform.GetComponentsInChildren<Transform>(true);
+                foreach (Transform t in ts)
+                {
+                    Debug.Log("t is " + t);
+                    if (t.gameObject.name == Name)
+                    { something = t;
+                      break; 
+                    }
+                }
+                //var something = getChildGameObject(gameObject, Name);
+                TrailRenderer trail = something.GetComponent<TrailRenderer>();
+
+                if (trail != null)
+                {
+                    {
+                        if (trail.emitting == true)
+                        {
+                            trail.emitting = false;
+                        }
+                        else
+                        {
+                            trail.emitting = true;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("no Children");
+                }
+            }
+
+        }
+
+        static public GameObject getChildGameObject(GameObject fromGameObject, string withName)
+        {
+            //Author: Isaac Dart, June-13.
+            Transform[] ts = fromGameObject.transform.GetComponentsInChildren<Transform>(true);
+            foreach (Transform t in ts) if (t.gameObject.name == withName) return t.gameObject;
+            return null;
+        }
+
         void OnDisable()
         {
             if (m_HumanBodyManager != null)
@@ -58,6 +187,7 @@ namespace UnityEngine.XR.ARFoundation.Samples
                 {
                     Debug.Log($"Adding a new skeleton [{humanBody.trackableId}].");
                     var newSkeletonGO = Instantiate(m_SkeletonPrefab, humanBody.transform);
+                   // newSkeletonGO.transform.parent = gameObject.transform;
                     boneController = newSkeletonGO.GetComponent<BoneController>();
                     m_SkeletonTracker.Add(humanBody.trackableId, boneController);
                 }
